@@ -1,9 +1,11 @@
+//connect.php
 <?php
 
     $connect = new mysqli("localhost", "root", "", "Clinic")
 
 ?>
 
+//Display and Register
 <?php
     include "connect.php";
 
@@ -118,7 +120,7 @@
 </body>
 </html>
 
-
+// update.php
 <?php
     include "connect.php";
     $id = $_GET['updateid'];
@@ -175,6 +177,7 @@
 </body>
 </html>
 
+//delete.php
 <?php
 include "connect.php";
 $id = $_GET['deleteid'];
@@ -184,6 +187,7 @@ $result = mysqli_query($connect,"DELETE FROM petowner where petOwnerID = $id");
 header("location:petowner.php?delete_operation=success");
 ?>
 
+// login.php
 <?php
     session_start();
     include "connection.php";
@@ -236,5 +240,6 @@ header("location:petowner.php?delete_operation=success");
 </html>
 
         
+
 
 
