@@ -179,3 +179,57 @@ $result = mysqli_query($connect,"DELETE FROM petowner where petOwnerID = $id");
 
 header("location:petowner.php?delete_operation=success");
 ?>
+
+<?php
+    session_start();
+    include "connection.php";
+
+    if(isset($_POST['login_button'])){
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        
+        $result = mysqli_query($connect, "SELECT * FROM users WHERE username='$username' AND password='$password'");
+        
+        if(mysqli_num_rows($result) == 1){
+            $_SESSION['username'] = $username;
+            header("location: display_positions.php");
+        } else {
+            $error = "Invalid username or password!";
+        }
+    }
+
+    if(isset($_SESSION['username'])){
+        header("location: display_positions.php");
+    }
+?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<style>
+    body{
+        display: flex;
+        flex-direction: column;
+        align-items:center
+    }
+</style>
+<body>
+    <h1>Login</h1>
+
+    <?php if(isset($error)){ echo $error; } ?>
+
+    <form method="post">
+        <input type="text" name="username" placeholder="Username" required><br><br>
+        <input type="password" name="password" placeholder="Password" required><Br><Br>
+        <center><button type="submit" name="login_button">Login</button></center>
+    </form>
+</body>
+</html>
+
+        
+
