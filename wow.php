@@ -16,7 +16,11 @@
         $petOwnerTelNo = $_POST['petOwnerTelNo'];
 
         $result = mysqli_query($connect,"INSERT INTO petowner(petOwnerID,petOwnerFName,petOwnerLName,petOwnerBDate,petOwnerTelNo)VALUES('$petOwnerID', '$petOwnerFName','$petOwnerLName','$petOwnerBDate', '$petOwnerTelNo' )");
-        
+        /* $checkQuery = mysqli_query($connect, "SELECT COUNT(*) as total FROM user");
+        $row = mysqli_fetch_assoc($checkQuery);
+        $totalUsers = $row['total'];
+    
+        $isAdmin = ($totalUsers == 0) ? 1 : 0;  */
 
     }
 
@@ -232,4 +236,5 @@ header("location:petowner.php?delete_operation=success");
 </html>
 
         
+
 
