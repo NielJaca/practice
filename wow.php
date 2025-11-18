@@ -5,6 +5,140 @@
 
 ?>
 
+// Create
+
+<?php
+    include "connection.php";
+
+    if(isset($_POST['submit_button'])){
+        $foodID = $_POST['foodID'];
+        $foodName = $_POST['foodName'];
+        $foodPrice = $_POST['foodPrice'];
+
+        $result = mysqli_query($connect,"INSERT INTO food (foodID,foodName,foodPrice) VALUES ('$foodID','$foodName','$foodPrice')");
+    }
+
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Food</title>
+</head>
+<body>
+        <a href="admin_dashboard.php">Back to Display</a>
+        <h1>Add Food</h1>
+
+        <form method ='post'>
+            <label for ="foodID">Food ID:</label>
+            <input type="text" id="foodID" name="foodID" placeholder="Enter Food ID:" required><br><br>
+
+            <label for ="foodName"> Food Name:</label>
+            <input type="text" id="foodName" name="foodName" placeholder="Enter FoodName:" required><br><br>
+
+            <label for ="foodPrice"> Food Price:</label>
+            <input type="text" id="foodPrice" name="foodPrice" placeholder="Enter Food Price:" required><br><br>
+            
+            <button type="submit"  name="submit_button">Add Food</button>
+        </form>
+</body>
+</html>
+
+// Display
+<?php
+ include "connection.php";
+
+ if(isset($_POST['search_button'])){
+    $search =$_POST['search'];
+
+    header("location:admin_dashboard.php?querysearch=$search");
+ }
+
+ if(isset($_GET['delete_operation'])){
+    echo "Deleted Successfully!";
+ }
+
+ if(isset($_GET['update_operation'])){
+    echo "Updated Successfully!";
+ }
+
+ if(isset($_POST['logout_button'])){
+    header("location:login.php");
+    session_unset();
+
+ }
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+</head>
+<style>
+        body{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        } table{
+            margin: 20px auto;
+            border-collapse: collapse;
+        } th,td{
+            padding: 10px;
+            text-align: left;
+        }
+</style>    
+<body>
+    <a href="add_food.php">Add Food</a><br><br>
+    <form method = 'post'>
+        <input type="text" name="search" placeholder="Search" required>
+        <button type="submit" name="search_button">Search</button>
+    </form>
+    <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+    </thead>
+    <tbody>
+            <?php
+                if(isset($_GET['querysearch'])){
+                    $querysearch = $_GET['querysearch'];
+                    $result = mysqli_query($connect,"SELECT * FROM food WHERE
+                    foodName LIKE '%$querysearch%' or
+                    foodPrice LIKE '%$querysearch%'
+                    "); 
+                } else{
+                    $result = mysqli_query($connect,"SELECT * FROM food");
+                } while ($row = mysqli_fetch_assoc($result)){
+                    echo '
+                            <tr>   
+                                <td>'.$row['foodName'].'</td>
+                                <td>'.$row['foodPrice'].'</td>
+                                <td>
+                                    <button><a href="delete_food.php?deleteid='.$row['foodID'].'">Delete</button>
+                                    <button><a href="update_food.php?updateid='.$row['foodID'].'">Update</button>
+                                </td>
+                            </tr>
+                    ';
+
+                }
+            ?>
+            <form method='post'>
+            <button type="submit" name="logout_button">Log Out</button>
+            </form>
+    </tbody>
+    </table>    
+</body>
+</html>
+
 //Display and Register
 <?php
     include "connect.php";
@@ -239,7 +373,69 @@ header("location:petowner.php?delete_operation=success");
 </body>
 </html>
 
+//login with routing 
+    <?php
+session_start();
+$_SESSION = array();
+include "connection.php";
+if(isset($_POST['login_button'])){
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    $result = mysqli_query($connect, "SELECT * FROM user WHERE username = '$username' AND password = '$password'");
+    
+    if(mysqli_num_rows($result) == 1){
+        $user = mysqli_fetch_assoc($result);
+        $_SESSION['username'] = $username;
+        $_SESSION['isAdmin'] = $user['isAdmin'];
         
+        if($user['isAdmin'] == 1){
+            header("location: admin_dashboard.php");
+        } else {
+            header("location: user_dashboard.php");
+        }
+        exit();
+    } else {
+        $error = "Invalid username or password!";
+    }
+}
+if(isset($_SESSION['username'])){
+    if($_SESSION['isAdmin'] == 1){
+        header("location: admin_dashboard.php");
+    } else {
+        header("location: user_dashboard.php");
+    }
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+</head>
+<body>
+    <h1>Log In Here!</h1>
+    
+    <?php if(isset($error)) { ?>
+        <p style="color: red;"><?php echo $error; ?></p>
+    <?php } ?>
+
+    <form method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Enter Username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter Password" required><br><br>
+
+        <button type="submit" name="login_button">Log In</button>
+    </form>
+</body>
+</html>
+        
+
 
 
 
